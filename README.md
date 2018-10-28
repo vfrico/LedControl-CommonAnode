@@ -133,6 +133,6 @@ An 8 digit 7-segment Max7219 display is connected to pins 11 (data), 13 (clk), a
 
 ## Full Class Reference
 
-I recommend to just look at the examples which show you how to use all the features, but if you want the nitty-gritty then here is the [full class reference](https://rawgit.com/sleemanj/LedPrint/65263f2/docs/html/class_led_print.html)
+I recommend to just look at the examples which show you how to use all the features, but if you want the nitty-gritty then here is the [full class reference](https://rawcdn.githack.com/sleemanj/LedPrint/be0d4be7943a2f60188f92e1efde4d1307e922f4/docs/html/class_led_print.html)
 
-Thanks to the super kind folks of [RawGit](https://rawgit.com/) and [MaxCDN](http://www.maxcdn.com/)
+Docs served by http://raw.githack.com/
