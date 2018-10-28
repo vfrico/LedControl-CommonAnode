@@ -4,6 +4,18 @@ An Arduino library for simple Arduino Print style use of 7-segment displays in A
 
 Derived from, and including, a modified [LedControl](http://wayoda.github.io/LedControl/) library.
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [LedPrint](#ledprint)
+  - [Features](#features)
+  - [Download, Install and Example](#download-install-and-example)
+  - [Simple Example](#simple-example)
+  - [Full Class Reference](#full-class-reference)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Features
 
   Printing pretty much anything works the same as it would for, for example, Serial, since LedPrint derives from [Print class just like Serial does](https://www.arduino.cc/en/Serial/Print).
@@ -121,6 +133,6 @@ An 8 digit 7-segment Max7219 display is connected to pins 11 (data), 13 (clk), a
 
 ## Full Class Reference
 
-I recommend to just look at the examples which show you how to use all the features, but if you want the nitty-gritty then here is the [full class reference](https://rawgit.com/sleemanj/LedPrint/e5c029a/docs/html/class_led_print.html)
+I recommend to just look at the examples which show you how to use all the features, but if you want the nitty-gritty then here is the [full class reference](https://rawgit.com/sleemanj/LedPrint/65263f2/docs/html/class_led_print.html)
 
 Thanks to the super kind folks of [RawGit](https://rawgit.com/) and [MaxCDN](http://www.maxcdn.com/)
