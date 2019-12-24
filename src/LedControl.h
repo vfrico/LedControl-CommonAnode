@@ -1,7 +1,7 @@
 /*
  *    LedControl.h - A library for controling Leds with a MAX7219/MAX7221
  *    Copyright (c) 2007 Eberhard Fahle
- * 
+ *
  *    Permission is hereby granted, free of charge, to any person
  *    obtaining a copy of this software and associated documentation
  *    files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
  *    copies of the Software, and to permit persons to whom the
  *    Software is furnished to do so, subject to the following
  *    conditions:
- * 
- *    This permission notice shall be included in all copies or 
+ *
+ *    This permission notice shall be included in all copies or
  *    substantial portions of the Software.
- * 
+ *
  *    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  *    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  *    OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -27,8 +27,6 @@
 #ifndef LedControl_h
 #define LedControl_h
 
-#include <avr/pgmspace.h>
-
 #if (ARDUINO >= 100)
 #include <Arduino.h>
 #else
@@ -39,7 +37,7 @@
  * Segments to be switched on for characters and digits on
  * 7-Segment Displays
  */
-const static byte charTable [] PROGMEM  = {
+const static byte charTable[128] = {
     B01111110,B00110000,B01101101,B01111001,B00110011,B01011011,B01011111,B01110000,
     B01111111,B01111011,B01110111,B00011111,B00001101,B00111101,B01001111,B01000111,
     B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,
@@ -53,7 +51,7 @@ const static byte charTable [] PROGMEM  = {
     B01100111,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,
     B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00001000,
     B00000000,B01110111,B00011111,B00001101,B00111101,B01001111,B01000111,B00000000,
-    B00110111,B00000000,B00000000,B00000000,B00001110,B00000000,B00010101,B00011101,
+    B00110111,B00000000,B00000000,B00000000,B00001110,B00000000,B00000000,B00000000,
     B01100111,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,
     B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000
 };
@@ -67,6 +65,8 @@ class LedControl {
 
         /* We keep track of the led-status for all 8 devices in this array */
         byte status[64];
+        /* We also keep track of the transposed version */
+        byte statusTransposed[64];
         /* Data is shifted out of this pin*/
         int SPI_MOSI;
         /* The clock is signaled on this pin */
@@ -75,17 +75,20 @@ class LedControl {
         int SPI_CS;
         /* The maximum number of devices we use */
         int maxDevices;
+        /* Choose whether we're using common cathode or common anode displays */
+        bool anodeMode;
 
     public:
-        /* 
-         * Create a new controler 
+        /*
+         * Create a new controler
          * Params :
          * dataPin		pin on the Arduino where data gets shifted out
          * clockPin		pin for the clock
-         * csPin		pin for selecting the device 
+         * csPin		pin for selecting the device
          * numDevices	maximum number of devices that can be controled
+         * anode		false for common-cathode displays, true for common-anode displays
          */
-        LedControl(int dataPin, int clkPin, int csPin, int numDevices=1);
+        LedControl(int dataPin, int clkPin, int csPin, int numDevices=1, bool anode=false);
 
         /*
          * Gets the number of devices attached to this LedControl.
@@ -94,7 +97,7 @@ class LedControl {
          */
         int getDeviceCount();
 
-        /* 
+        /*
          * Set the shutdown (power saving) mode for the device
          * Params :
          * addr	The address of the display to control
@@ -103,7 +106,7 @@ class LedControl {
          */
         void shutdown(int addr, bool status);
 
-        /* 
+        /*
          * Set the number of digits (or rows) to be displayed.
          * See datasheet for sideeffects of the scanlimit on the brightness
          * of the display.
@@ -113,7 +116,7 @@ class LedControl {
          */
         void setScanLimit(int addr, int limit);
 
-        /* 
+        /*
          * Set the brightness of the display.
          * Params:
          * addr		the address of the display to control
@@ -121,25 +124,25 @@ class LedControl {
          */
         void setIntensity(int addr, int intensity);
 
-        /* 
-         * Switch all Leds on the display off. 
+        /*
+         * Switch all Leds on the display off.
          * Params:
          * addr	address of the display to control
          */
         void clearDisplay(int addr);
 
-        /* 
+        /*
          * Set the status of a single Led.
          * Params :
-         * addr	address of the display 
+         * addr	address of the display
          * row	the row of the Led (0..7)
          * col	the column of the Led (0..7)
-         * state	If true the led is switched on, 
+         * state	If true the led is switched on,
          *		if false it is switched off
          */
         void setLed(int addr, int row, int col, boolean state);
 
-        /* 
+        /*
          * Set all 8 Led's in a row to a new state
          * Params:
          * addr	address of the display
@@ -149,7 +152,7 @@ class LedControl {
          */
         void setRow(int addr, int row, byte value);
 
-        /* 
+        /*
          * Set all 8 Led's in a column to a new state
          * Params:
          * addr	address of the display
@@ -159,7 +162,7 @@ class LedControl {
          */
         void setColumn(int addr, int col, byte value);
 
-        /* 
+        /*
          * Display a hexadecimal digit on a 7-Segment Display
          * Params:
          * addr	address of the display
@@ -169,22 +172,38 @@ class LedControl {
          */
         void setDigit(int addr, int digit, byte value, boolean dp);
 
-        /* 
+        /*
          * Display a character on a 7-Segment display.
          * There are only a few characters that make sense here :
          *	'0','1','2','3','4','5','6','7','8','9','0',
          *  'A','b','c','d','E','F','H','L','P',
-         *  '.','-','_',' ' 
+         *  '.','-','_',' '
          * Params:
          * addr	address of the display
          * digit	the position of the character on the display (0..7)
-         * value	the character to be displayed. 
+         * value	the character to be displayed.
          * dp	sets the decimal point.
          */
         void setChar(int addr, int digit, char value, boolean dp);
+
+        /*
+         * Transpose data matrix for use with common-anode displays.
+         * Params:
+         * addr	address of the display
+         */
+        void transposeData(int addr);
+
+        /*
+         * Light up segments of a 7-segment display directly by passing a binary value.
+         * The eight bits of the byte each refer to a segment:
+         *     Byte:   0 0 0 0 0 0 0 0
+         *  Segments: DP A B C D E F G
+         * Params:
+         * addr	address of the display
+         * digit	the position of the character on the display (0..7)
+         * value	the binary value to be displayed
+         */
+        void setDirectDigit(int addr, int digit, byte value);
 };
 
 #endif	//LedControl.h
-
-
-
