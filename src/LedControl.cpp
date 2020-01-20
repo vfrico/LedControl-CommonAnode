@@ -178,14 +178,14 @@ void LedControl::setDigit(int addr, int digit, byte value, boolean dp) {
         v|=B10000000;
     status[offset+digit]=v;
     if (anodeMode) {
-    	//transpose the digit matrix
-    	transposeData(addr);
-    	//send the entire set of digits
-    	for(int i=0;i<8;i++) {
-	    spiTransfer(addr, i+1, statusTransposed[offset+i]);
-    	}
+        //transpose the digit matrix
+        transposeData(addr);
+        //send the entire set of digits
+        for(int i=0;i<8;i++) {
+           spiTransfer(addr, i+1, statusTransposed[offset+i]);
+       }
     } else {
-    	spiTransfer(addr, digit+1, v);
+        spiTransfer(addr, digit+1, v);
     }
 }
 

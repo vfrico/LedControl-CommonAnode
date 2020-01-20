@@ -12,7 +12,7 @@ LedPrintJustifiable::LedPrintJustifiable ( LedControl *existingControl, uint8_t 
 int8_t LedPrintJustifiable::justify(int8_t Justification, char blank)
 {
   _justificationBlank = blank < 10 ? blank+48 : blank;
-  
+
   // Left
   if(Justification == -1)
   {
@@ -29,7 +29,7 @@ int8_t LedPrintJustifiable::justify(int8_t Justification, char blank)
     {
       justifyBuffer = (uint8_t *)malloc(_numberOfDigits);
     }
-    
+
     if(!justifyBuffer)
     {
       _justification = -1;
@@ -39,7 +39,7 @@ int8_t LedPrintJustifiable::justify(int8_t Justification, char blank)
       _justification = Justification;
     }
   }
-  
+
   return _justification;
 }
 
@@ -56,13 +56,13 @@ void LedPrintJustifiable::_printCharacter(uint8_t &currentPos, uint8_t c, uint8_
       }
       currentPos--;
     }
-    
+
     *(justifyBuffer+currentPos) = c | (dp?0b10000000:0);
-    
+
     // how many empty digits have we?
     uint8_t empties = _numberOfDigits - (currentPos+1);
     uint8_t jPos = 0;
-    
+
     // insert empties on the left
     uint8_t leading = (_justification==1?empties:(empties/2));
     if(leading < empties-leading) leading+=1;
@@ -73,13 +73,13 @@ void LedPrintJustifiable::_printCharacter(uint8_t &currentPos, uint8_t c, uint8_
       empties--;
       leading--;
     }
-    
+
     // and then the content
     for(uint8_t x = 0;x <= currentPos; x++)
     {
       setChar(_firstDigitIndex+jPos+x, *(justifyBuffer+x)&(~0b10000000), *(justifyBuffer+x)&(0b10000000));
     }
-    
+
     // and then the rest of the empties
     jPos += currentPos+1;
     while(empties>0)
